@@ -14,6 +14,5 @@ class NaiveMeanReversion(BaseStrategy):
                 trades.append(0) # Hold
 
         return {
-            "trades": trades,
-            "loans": [0, 0, 0]
+            "trades": trades
         }

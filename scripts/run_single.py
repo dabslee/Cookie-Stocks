@@ -53,12 +53,12 @@ def main():
     analytics = MarketAnalytics()
 
     obs, info = env.reset(seed=args.seed)
-    analytics.record_tick(0, info)
+    analytics.record_tick(0, info, action=None)
 
     for t in range(1, args.ticks + 1):
         action = strategy.decide_action(obs, info)
         obs, reward, terminated, truncated, info = env.step(action)
-        analytics.record_tick(t, info)
+        analytics.record_tick(t, info, action=action)
         if terminated or truncated:
             break
 
@@ -70,7 +70,7 @@ def main():
     plotter = MarketPlotter(df, args.outdir)
     plotter.plot_all()
 
-    print(f"Simulation complete. Final portfolio value: {info['portfolio_value']:.2f}")
+    print(f"Simulation complete. Final profit: ${info['portfolio_value'] - config.starting_cash:.2f}")
     print(f"Results saved to {args.outdir}")
 
 if __name__ == "__main__":

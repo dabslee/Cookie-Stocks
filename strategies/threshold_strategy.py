@@ -19,6 +19,5 @@ class ThresholdStrategy(BaseStrategy):
                 trades.append(0)
 
         return {
-            "trades": trades,
-            "loans": [0, 0, 0]
+            "trades": trades
         }

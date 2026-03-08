@@ -8,8 +8,7 @@ from .portfolio import Portfolio
 from .config import MarketConfig
 from .office import WarehouseManager
 from .brokers import BrokerManager
-from .loans import LoanManager
-from .constants import STOCKS_METADATA, LOANS
+from .constants import STOCKS_METADATA
 from .types import MarketObservation
 
 class CookieClickerStockMarketEnv(gym.Env):
@@ -20,7 +19,6 @@ class CookieClickerStockMarketEnv(gym.Env):
         self.config = config
         self.engine = StockMarketEngine(config)
         self.portfolio = Portfolio(config.starting_cash)
-        self.loan_manager = LoanManager()
         self.tick_count = 0
 
         num_stocks = len(STOCKS_METADATA)
@@ -36,7 +34,6 @@ class CookieClickerStockMarketEnv(gym.Env):
         # Plus optional actions for loans (3 slots).
         self.action_space = spaces.Dict({
             "trades": spaces.MultiDiscrete([3] * num_stocks), # 0: hold, 1: buy max, 2: sell max
-            "loans": spaces.MultiDiscrete([2] * 3), # 0: do nothing, 1: activate if possible
             "auras": spaces.MultiDiscrete([2, 2]), # [SI, RB] 0: off, 1: on
             "brokers": spaces.Discrete(2), # 0: do nothing, 1: hire one
         })
@@ -77,8 +74,9 @@ class CookieClickerStockMarketEnv(gym.Env):
             "unrealized_pl": self.portfolio.get_unrealized_pl(self.engine.stocks),
             "realized_pl": self.portfolio.realized_pl,
             "tick": self.tick_count,
-            "loan_states": self.loan_manager.loans,
-            "overhead": BrokerManager.calculate_overhead(self.config.broker_count)
+            "overhead": BrokerManager.calculate_overhead(self.config.broker_count),
+            "supreme_intellect": self.config.supreme_intellect,
+            "reality_bending": self.config.reality_bending
         }
 
     def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> Tuple[np.ndarray, Dict]:
@@ -88,7 +86,6 @@ class CookieClickerStockMarketEnv(gym.Env):
 
         self.engine = StockMarketEngine(self.config)
         self.portfolio = Portfolio(self.config.starting_cash)
-        self.loan_manager = LoanManager()
         self.tick_count = 0
 
         # Update initial capacities
@@ -109,19 +106,11 @@ class CookieClickerStockMarketEnv(gym.Env):
             max_brokers = WarehouseManager.get_max_brokers(self.config)
             if self.config.broker_count < max_brokers:
                 from .constants import BROKER_COST
-                if self.portfolio.cash >= BROKER_COST:
-                    self.portfolio.cash -= BROKER_COST
-                    self.config.broker_count += 1
+                # Infinite money: no cash check needed
+                self.portfolio.cash -= BROKER_COST
+                self.config.broker_count += 1
 
-        # 3. Handle Loans
-        if "loans" in action:
-            for i, act in enumerate(action["loans"]):
-                loan_id = i + 1
-                if act == 1:
-                    downpayment = self.loan_manager.activate_loan(loan_id, self.portfolio.cash)
-                    self.portfolio.cash -= downpayment
-
-        # 4. Handle Trades
+        # 3. Handle Trades
         overhead = BrokerManager.calculate_overhead(self.config.broker_count)
         if "trades" in action:
             for i, act in enumerate(action["trades"]):
@@ -131,9 +120,8 @@ class CookieClickerStockMarketEnv(gym.Env):
                 elif act == 2: # Sell Max
                     self.portfolio.sell_stock(stock, stock.shares_owned)
 
-        # 5. Engine Tick
+        # 4. Engine Tick
         self.engine.tick()
-        self.loan_manager.tick()
         self.tick_count += 1
 
         # Update capacities (in case bank level or office level changed, though usually they are static during a run)

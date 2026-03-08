@@ -47,27 +47,6 @@ OFFICE_LEVELS = {
     6: OfficeInfo(6, "Palace of Greed", 0, 3, True, 0, 0), # Final level
 }
 
-# Loans
-class LoanInfo(NamedTuple):
-    id: int
-    name: str
-    cps_bonus: float
-    bonus_duration: int # in ticks
-    cps_penalty: float
-    penalty_duration: int # in ticks
-    downpayment_percent: float
-
-LOANS = {
-    1: LoanInfo(1, "Modest loan", 0.50, 2 * 60, -0.75, 4 * 60, 0.20),
-    2: LoanInfo(2, "Pawnshop loan", 1.00, 40 // 60, -0.90, 40, 0.40), # 40 seconds is < 1 tick. Wiki says 40 seconds, then 40 minutes penalty.
-    3: LoanInfo(3, "Retirement loan", 0.20, 2 * 24 * 60, -0.20, 5 * 24 * 60, 0.50),
-}
-# Correction for Loan 2: 40 seconds bonus is very short.
-# "The listed loan effects pause when exiting the game in the real game."
-# 40 seconds = 0.666 ticks. Let's round or handle fractional ticks if needed,
-# but per-tick engine usually means 1 tick is the minimum.
-# Actually, the user says "1 tick = 1 minute". So 40 seconds is slightly less than 1 tick.
-
 # Dragon Auras
 class AuraEffect(NamedTuple):
     delta_decay: float

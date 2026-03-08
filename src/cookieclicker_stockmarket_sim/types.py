@@ -23,13 +23,6 @@ class StockState:
     average_cost_basis: float = 0.0
 
 @dataclass
-class LoanState:
-    loan_id: int
-    bonus_remaining: int # ticks
-    penalty_remaining: int # ticks
-    active: bool = False
-
-@dataclass
 class MarketObservation:
     prices: List[float]
     resting_values: List[float]
@@ -42,7 +35,6 @@ class MarketObservation:
     overhead: float = 0.0
     office_level: int = 1
     bank_level: int = 1
-    loan_states: List[Dict] = field(default_factory=list)
     supreme_intellect: bool = False
     reality_bending: bool = False
     tick: int = 0

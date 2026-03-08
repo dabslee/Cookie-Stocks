@@ -21,12 +21,7 @@ class Portfolio:
         buy_price = BrokerManager.get_buy_price(stock.value, overhead)
         total_cost = shares_to_buy * buy_price
 
-        if total_cost > self.cash:
-            # Optionally buy as many as possible
-            shares_to_buy = int(self.cash // buy_price)
-            if shares_to_buy <= 0:
-                return False
-            total_cost = shares_to_buy * buy_price
+        # Infinite money: no cash check needed
 
         # Update average cost basis
         old_total_cost = stock.shares_owned * stock.average_cost_basis

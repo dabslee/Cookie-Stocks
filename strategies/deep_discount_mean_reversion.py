@@ -46,7 +46,6 @@ class DeepDiscountMeanReversion(BaseStrategy):
 
         return {
             "trades": trades,
-            "loans": [0, 0, 0],
             "auras": [si_active, rb_active],
             "brokers": broker_action
         }

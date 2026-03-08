@@ -3,6 +3,7 @@ import os
 import sys
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
@@ -63,7 +64,7 @@ def main():
 
     for strat_name in args.strategies:
         print(f"Running benchmark for {strat_name}...")
-        for i in range(args.trials):
+        for i in tqdm(range(args.trials), desc=f"Trial Progress"):
             seed = 1000 + i
             config = MarketConfig(
                 max_ticks=args.ticks,

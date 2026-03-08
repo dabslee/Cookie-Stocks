@@ -10,16 +10,21 @@ class MarketPlotter:
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
 
+        # Calculate profit relative to start
+        start_cash = self.df.iloc[0]["cash"]
+        self.df["profit_portfolio"] = self.df["portfolio_value"] - self.df["portfolio_value"].iloc[0]
+        self.df["profit_cash"] = self.df["cash"] - self.df["cash"].iloc[0]
+
     def plot_portfolio_value(self):
         plt.figure(figsize=(10, 6))
-        plt.plot(self.df["tick"], self.df["portfolio_value"], label="Portfolio Value")
-        plt.plot(self.df["tick"], self.df["cash"], label="Cash", alpha=0.7)
-        plt.title("Portfolio Value Over Time")
+        plt.plot(self.df["tick"], self.df["profit_portfolio"], label="Total Profit (Portfolio)")
+        plt.plot(self.df["tick"], self.df["profit_cash"], label="Cash Profit", alpha=0.7)
+        plt.title("Profit Over Time")
         plt.xlabel("Tick")
-        plt.ylabel("Cookies")
+        plt.ylabel("Profit ($)")
         plt.legend()
         plt.grid(True)
-        plt.savefig(os.path.join(self.output_dir, "portfolio_value.png"))
+        plt.savefig(os.path.join(self.output_dir, "profit_over_time.png"))
         plt.close()
 
     def plot_stock_prices(self, stock_ids: List[int] = None):
@@ -42,19 +47,22 @@ class MarketPlotter:
 
     def plot_holdings(self, stock_ids: List[int] = None):
         if stock_ids is None:
-            stock_ids = [0, 1, 2, 3]
+            stock_ids = list(range(len(STOCKS_METADATA)))
 
         plt.figure(figsize=(12, 8))
-        for sid in stock_ids:
-            name = STOCKS_METADATA[sid].name
-            plt.fill_between(self.df["tick"], self.df[f"stock_{sid}_shares"], label=f"{name} Shares", alpha=0.3)
 
-        plt.title("Stock Holdings Over Time")
+        labels = [STOCKS_METADATA[sid].name for sid in stock_ids]
+        data = [self.df[f"stock_{sid}_shares"] for sid in stock_ids]
+
+        plt.stackplot(self.df["tick"], data, labels=labels, alpha=0.8)
+
+        plt.title("Stacked Stock Holdings Over Time")
         plt.xlabel("Tick")
-        plt.ylabel("Shares")
-        plt.legend()
+        plt.ylabel("Total Shares")
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize='small')
         plt.grid(True)
-        plt.savefig(os.path.join(self.output_dir, "holdings.png"))
+        plt.tight_layout()
+        plt.savefig(os.path.join(self.output_dir, "holdings_stacked.png"))
         plt.close()
 
     def plot_all(self):
