@@ -12,6 +12,7 @@ class MarketAnalytics:
             "portfolio_value": info["portfolio_value"],
             "unrealized_pl": info["unrealized_pl"],
             "realized_pl": info["realized_pl"],
+            "total_fees": info["total_fees"],
             "broker_count": info["broker_count"],
             "supreme_intellect": info["supreme_intellect"],
             "reality_bending": info["reality_bending"],

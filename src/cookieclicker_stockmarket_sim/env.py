@@ -73,6 +73,7 @@ class CookieClickerStockMarketEnv(gym.Env):
             "portfolio_value": self.portfolio.get_portfolio_value(self.engine.stocks),
             "unrealized_pl": self.portfolio.get_unrealized_pl(self.engine.stocks),
             "realized_pl": self.portfolio.realized_pl,
+            "total_fees": self.portfolio.total_fees_paid,
             "tick": self.tick_count,
             "overhead": BrokerManager.calculate_overhead(self.config.broker_count),
             "supreme_intellect": self.config.supreme_intellect,

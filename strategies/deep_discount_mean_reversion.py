@@ -15,9 +15,8 @@ class DeepDiscountMeanReversion(BaseStrategy):
         # Actually I added it to info in env.py _get_info? No, let me check.
         # Wait, I didn't add broker_count to _get_info in env.py. Let's fix that too.
 
-        # Heuristic: Hire brokers until at least 72 if cash allows
-        if info.get("cash", 0) > BROKER_COST * 2: # Keep some buffer
-             broker_action = 1
+        # Heuristic: Hire brokers until maxed (infinite money)
+        broker_action = 1
 
         for stock in stocks:
             ratio = stock.value / stock.resting_value

@@ -19,5 +19,6 @@ class ThresholdStrategy(BaseStrategy):
                 trades.append(0)
 
         return {
-            "trades": trades
+            "trades": trades,
+            "brokers": 1
         }

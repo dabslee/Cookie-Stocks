@@ -47,6 +47,7 @@ def run_trial(strategy_name, config, seed):
         "final_value": info["portfolio_value"],
         "realized_pl": info["realized_pl"],
         "unrealized_pl": info["unrealized_pl"],
+        "total_fees": info["total_fees"],
         "num_trades": num_trades
     }
 
@@ -87,6 +88,7 @@ def main():
     summary = df.groupby("strategy").agg({
         "final_value": ["mean", "std", "median"],
         "realized_pl": ["mean"],
+        "total_fees": ["mean"],
         "num_trades": ["mean"]
     })
 
